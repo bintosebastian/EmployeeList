@@ -1,12 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import EmployeeList from './EmployeeList/List';
+import EmployeeListHome from './EmployeeList/Main';
+
 export default class App extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <EmployeeList/>
-      </View>
+        <EmployeeListHome style={styles.container}/>
     );
   }
 }
