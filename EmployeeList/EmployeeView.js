@@ -1,55 +1,48 @@
 import React, { Component } from 'react'
-import {  FlatList, 
-  ActivityIndicator,
-  AppRegistry,
-  TouchableOpacity, 
+import { 
   View, 
   Text, 
   StyleSheet, 
-  Button 
+  TouchableOpacity
 } from 'react-native'
-
-import {
-  createStackNavigator,
-} from 'react-navigation';
-const baseUrl='http://dotnet2.zerone-consulting.com/PythonRESTapi/api/';
+import PropTypes from 'prop-types'
+import ajax from '../Ajax.js'
 
 class EmployeeView extends React.Component{
-  constructor(props){
-    super(props);
-    this.state ={
-       isLoading: true,
-       employeeDetails : [],
-    }
+  static propTypes ={
+    employee : PropTypes.object.isRequired,
+    empid : PropTypes.number.isRequired,
+    onGoBackPress : PropTypes.func.isRequired,
   }
-
-    componentDidMount(){
-        return fetch(baseUrl + 'employees/' + this.props.empid)
-          .then((response) => response.json())
-          .then((responseJson) => {
-    
-            this.setState({
-              isLoading: false,
-              employeeDetails: responseJson,
-            }, function(){
-    
-            });
-    
-          })
-          .catch((error) =>{
-            console.error(error);
-          });
-      }
-      
-    render(){
-      const employee =this.props.employee;
-      const empid=this.props.empid;
-        return(
-          <View style={styles.empView}>
-            <Text style={styles.title}>Employees {this.state.employeeDetails.first_name} {empid}</Text>            
-          </View>
-        );
+  state ={
+    employeeDetails  : {},
+    employeeID :this.props.empid,
+  } 
+  async componentDidMount(){
+    const employee = await ajax.fetchEmployeDetalis(this.state.employeeID);
+      this.setState({
+        employeeDetails:employee[0]
+      })
     }
+
+  goBack(){
+      this.props.onGoBackPress();
+  } 
+
+  render(){
+    const {employeeDetails} =this.state;
+    const employeeID = this.state;
+      return(
+        <View style={styles.tile}> 
+          <Text style={styles.name}>{employeeDetails.employee_id}: {employeeDetails.first_name} {employeeDetails.last_name}</Text>
+          <Text style={styles.place}>{employeeDetails.place}</Text>
+          <Text style={styles.designation}>{this.state.employeeID}{employeeDetails.first_name}</Text>  
+          <TouchableOpacity onPress={()=> this.goBack() } >
+            <Text>Back</Text>
+          </TouchableOpacity>  
+        </View>
+      );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -73,13 +66,9 @@ const styles = StyleSheet.create({
       padding:5,
     },
     name: {
-      color:'#F45B69',
-      flex: 1,
       fontSize: 20,
     },
     place: {
-      color:'#028090',
-      flex: 1,
       fontSize: 15,
     },
     buttons:{
@@ -106,5 +95,5 @@ const styles = StyleSheet.create({
       backgroundColor:'#841584' 
     }
   });
-  
-export default EmployeeView;
+
+  export default EmployeeView;

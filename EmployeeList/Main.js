@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import {  FlatList, ActivityIndicator,AppRegistry,TouchableOpacity, View, Text, StyleSheet, Button } from 'react-native'
-import {
-  createStackNavigator,
-} from 'react-navigation';
+import { createStackNavigator,DrawerNavigator } from 'react-navigation';
+import {Icon,Header,Content,Left} from 'native-base'
 import EmployeeList from './ListView';
 import EmployeeView from './EmployeeView';
+import AddNewEmployee from './AddNewEmployee';
+
 const baseUrl='http://dotnet2.zerone-consulting.com/PythonRESTapi/api/';
 
 
@@ -48,6 +49,12 @@ class EmployeeListView extends React.Component{
       )
     }
 
+    unsetEmployeeID = (employeeID)=>{
+      this.setState({
+        currentEmployeeID: null,
+      });
+    }
+
     render(){
         if(this.state.isLoading){
           return(
@@ -59,17 +66,22 @@ class EmployeeListView extends React.Component{
         if (this.state.currentEmployeeID) {
           return(
             <View style={styles.empHome}>
-              <EmployeeView employee = {this.getCurrentEmployee} empid={this.state.currentEmployeeID} />
+              <EmployeeView employee = {this.getCurrentEmployee()} empid={this.state.currentEmployeeID} onGoBackPress={this.unsetEmployeeID} />
             </View>
           )
         }
         if(this.state.employeeList.length > 0){
           return(
             <View style={styles.empHome}>
+              <Header>
+                  <Left>
+                      <Icon name ="ios-menu" onPress={() => this.props.navigation.openDrawer()}/>
+                  </Left>
+              </Header>
               <Text style={styles.title}>Employees List</Text>
               <Button
-                title="Go to Details"
-                onPress={() => this.props.navigation.navigate('Details')}
+                title="Add New Employee"
+                onPress={() => this.props.navigation.navigate('AddNew')}
               />
               <EmployeeList employeeList = {this.state.employeeList} onItemPress={this.setEmployeeID} />
             </View>
@@ -90,37 +102,19 @@ class DetailsScreen extends React.Component {
     }
   }
 
-  componentDidMount(){
-    return fetch(baseUrl + 'employees/1')
-      .then((response) => response.json())
-      .then((responseJson) => {
-
-        this.setState({
-          isLoading: false,
-          employeeDetails: responseJson,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-  }
-  
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details</Text>
-        {/* <Text>{this.props.employeeDetails.employee_id}: {this.props.employeeDetails.first_name} {this.props.employeeDetails.last_name}</Text> */}
-        <Button
-          title="Go to Home"
-          onPress={() => this.props.navigation.navigate('Home')}
-        />
-        <Button
-          title="Go back"
-          onPress={() => this.props.navigation.goBack()}
-        />
+        <Text>Details</Text>
+        
+          <Button
+            title="Go to Home"
+            onPress={() => this.props.navigation.navigate('Home')}
+          />
+          <Button
+            title="Go back"
+            onPress={() => this.props.navigation.goBack()}
+          />
       </View>
     );
   }
@@ -133,9 +127,11 @@ const EmployeeListHome = createStackNavigator({
     Details: {
       screen: DetailsScreen,
     },
-  },
-  {
-    initialRouteName: 'Home',
+    AddNew: {
+      screen: AddNewEmployee,
+    },
+  },{
+    initialRouteName : 'Home'
   }
 );
 

@@ -9,6 +9,11 @@ export default {
         .catch((error) =>{
         console.error(error);
         });
+    },
+    async fetchEmployeDetalis(empID){
+        const response = await fetch(baseUrl + 'employees/' + empID)
+        const responseJson = response.json();
+        return responseJson;
     }
     
 }

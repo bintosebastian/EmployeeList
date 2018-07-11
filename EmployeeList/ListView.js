@@ -26,7 +26,7 @@ class EmployeeList extends React.Component{
               <Text style={styles.designation}>{item.designation}</Text>
               </TouchableOpacity>
             }
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
     );
